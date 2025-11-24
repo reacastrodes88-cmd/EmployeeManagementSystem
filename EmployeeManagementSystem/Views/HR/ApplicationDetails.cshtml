@@ -1,0 +1,194 @@
+﻿@model EmployeeManagementSystem.Models.JobApplication
+@{
+    ViewData["Title"] = "Application Details";
+}
+
+@section Styles {
+    <style>
+        .application-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .application-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .application-body {
+            padding: 30px;
+        }
+
+        .info-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+            .info-section h6 {
+                color: #667eea;
+                font-weight: 600;
+                margin-bottom: 15px;
+            }
+
+        .info-row {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .info-label {
+            width: 180px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .info-value {
+            flex: 1;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .resume-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+    </style>
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="application-card">
+                <div class="application-header">
+                    <h3 class="fw-bold mb-1">@Model.FullName</h3>
+                    <p class="mb-0 opacity-75">Applying for: @Model.ApplyingForPosition</p>
+                </div>
+
+                <div class="application-body">
+                    <!-- Personal Info -->
+                    <div class="info-section">
+                        <h6><i class="fas fa-user me-2"></i>Personal Information</h6>
+                        <div class="info-row">
+                            <span class="info-label">Full Name:</span>
+                            <span class="info-value">@Model.FullName</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Date of Birth:</span>
+                            <span class="info-value">@Model.DateOfBirth.ToString("MMMM dd, yyyy")</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email:</span>
+                            <span class="info-value">@Model.Email</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Phone:</span>
+                            <span class="info-value">@Model.PhoneNumber</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Address:</span>
+                            <span class="info-value">@Model.Address</span>
+                        </div>
+                    </div>
+
+                    <!-- Professional Info -->
+                    <div class="info-section">
+                        <h6><i class="fas fa-briefcase me-2"></i>Professional Background</h6>
+                        <div class="info-row">
+                            <span class="info-label">Applying For:</span>
+                            <span class="info-value"><strong>@Model.ApplyingForPosition</strong></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Education:</span>
+                            <span class="info-value">@(Model.Education ?? "N/A")</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Previous Company:</span>
+                            <span class="info-value">@(Model.PreviousCompany ?? "N/A")</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Years of Experience:</span>
+                            <span class="info-value">@(Model.YearsOfExperience?.ToString() ?? "N/A") years</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Skills:</span>
+                            <span class="info-value">@(Model.Skills ?? "N/A")</span>
+                        </div>
+                    </div>
+
+                    <!-- Cover Letter -->
+                    <div class="info-section">
+                        <h6><i class="fas fa-envelope-open-text me-2"></i>Cover Letter</h6>
+                        <p style="white-space: pre-wrap;">@Model.CoverLetter</p>
+                    </div>
+
+                    <!-- Resume -->
+                    @if (!string.IsNullOrEmpty(Model.ResumeFilePath))
+                    {
+                        <div class="info-section">
+                            <h6><i class="fas fa-file-pdf me-2"></i>Resume/CV</h6>
+                            <div class="resume-box">
+                                <i class="fas fa-file-download fa-3x text-primary mb-3"></i>
+                                <p class="mb-2">Resume uploaded by applicant</p>
+                                <a href="@Model.ResumeFilePath" target="_blank" class="btn btn-primary" download>
+                                    <i class="fas fa-download me-2"></i>Download Resume
+                                </a>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Application Status -->
+                    <div class="info-section">
+                        <h6><i class="fas fa-info-circle me-2"></i>Application Status</h6>
+                        <div class="info-row">
+                            <span class="info-label">Status:</span>
+                            <span class="info-value"><strong>@Model.Status</strong></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Date Applied:</span>
+                            <span class="info-value">@Model.DateApplied.ToString("MMMM dd, yyyy")</span>
+                        </div>
+                        @if (Model.DateReviewed.HasValue)
+                        {
+                            <div class="info-row">
+                                <span class="info-label">Date Reviewed:</span>
+                                <span class="info-value">@Model.DateReviewed?.ToString("MMMM dd, yyyy")</span>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.HRNotes))
+                        {
+                            <div class="info-row">
+                                <span class="info-label">HR Notes:</span>
+                                <span class="info-value">@Model.HRNotes</span>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Applications" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Back to Applications
+                        </a>
+                        @if (Model.Status != EmployeeManagementSystem.Models.ApplicationStatus.Hired)
+                        {
+                            <a asp-action="HireApplicant" asp-route-id="@Model.ApplicationId" class="btn btn-success" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none;">
+                                <i class="fas fa-user-check me-1"></i>Hire This Applicant
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success fs-6">
+                                <i class="fas fa-check-circle me-1"></i>Already Hired
+                            </span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

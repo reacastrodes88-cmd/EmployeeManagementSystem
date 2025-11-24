@@ -1,0 +1,157 @@
+﻿@model IEnumerable<EmployeeManagementSystem.Models.JobApplication>
+@{
+    ViewData["Title"] = "Job Applications";
+}
+
+@section Styles {
+    <style>
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        .badge-pending {
+            background: #ffc107;
+            color: #333;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        .badge-review {
+            background: #17a2b8;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        .badge-shortlisted {
+            background: #6f42c1;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        .badge-hired {
+            background: #28a745;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        .badge-rejected {
+            background: #dc3545;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+    </style>
+}
+
+<div class="container py-4">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="page-header">
+        <h2 class="fw-bold mb-1"><i class="fas fa-file-alt me-2"></i>Job Applications</h2>
+        <p class="mb-0 opacity-75">Review and manage job applications</p>
+    </div>
+
+    <div class="table-container">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Applicant</th>
+                        <th>Position</th>
+                        <th>Experience</th>
+                        <th>Date Applied</th>
+                        <th>Status</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var app in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@app.FullName</strong><br>
+                                    <small class="text-muted">@app.Email | @app.PhoneNumber</small>
+                                </td>
+                                <td>@app.ApplyingForPosition</td>
+                                <td>
+                                    @if (app.YearsOfExperience.HasValue)
+                                    {
+                                        <span>@app.YearsOfExperience years</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">N/A</span>
+                                    }
+                                    <br>
+                                    <small class="text-muted">@app.Education</small>
+                                </td>
+                                <td>@app.DateApplied.ToString("MMM dd, yyyy")</td>
+                                <td>
+                                    @switch (app.Status)
+                                    {
+                                        case EmployeeManagementSystem.Models.ApplicationStatus.Pending:
+                                            <span class="badge-pending">Pending</span>
+                                            break;
+                                        case EmployeeManagementSystem.Models.ApplicationStatus.UnderReview:
+                                            <span class="badge-review">Under Review</span>
+                                            break;
+                                        case EmployeeManagementSystem.Models.ApplicationStatus.Shortlisted:
+                                            <span class="badge-shortlisted">Shortlisted</span>
+                                            break;
+                                        case EmployeeManagementSystem.Models.ApplicationStatus.Hired:
+                                            <span class="badge-hired">Hired</span>
+                                            break;
+                                        case EmployeeManagementSystem.Models.ApplicationStatus.Rejected:
+                                            <span class="badge-rejected">Rejected</span>
+                                            break;
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <a asp-action="ApplicationDetails" asp-route-id="@app.ApplicationId" class="btn btn-sm btn-outline-info" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    @if (app.Status != EmployeeManagementSystem.Models.ApplicationStatus.Hired)
+                                    {
+                                        <a asp-action="HireApplicant" asp-route-id="@app.ApplicationId" class="btn btn-sm btn-outline-success" title="Hire">
+                                            <i class="fas fa-user-check"></i>
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">No job applications yet.</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

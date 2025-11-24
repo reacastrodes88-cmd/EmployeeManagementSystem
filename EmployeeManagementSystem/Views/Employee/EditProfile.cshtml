@@ -1,0 +1,169 @@
+﻿@model EmployeeManagementSystem.Models.Employee
+@{
+    ViewData["Title"] = "Edit Profile";
+}
+
+@section Styles {
+    <style>
+        .form-container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .profile-picture-preview {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+            .profile-picture-preview img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .profile-picture-preview .initials {
+                font-size: 48px;
+                font-weight: 700;
+                color: #667eea;
+            }
+
+        .upload-btn-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .upload-btn {
+            border: 2px solid #667eea;
+            color: #667eea;
+            background-color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+            .upload-btn:hover {
+                background: #667eea;
+                color: white;
+            }
+
+        .upload-btn-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            color: white;
+            font-weight: 600;
+        }
+    </style>
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="form-container">
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold">Edit My Profile</h3>
+                    <p class="text-muted">Update your personal information</p>
+                </div>
+
+                <form asp-action="EditProfile" method="post">
+                    <input type="hidden" asp-for="EmployeeId" />
+                    <input type="hidden" asp-for="UserId" />
+                    <input type="hidden" asp-for="EmployeeNumber" />
+                    <input type="hidden" asp-for="FirstName" />
+                    <input type="hidden" asp-for="LastName" />
+                    <input type="hidden" asp-for="Email" />
+                    <input type="hidden" asp-for="DateOfBirth" />
+                    <input type="hidden" asp-for="DateHired" />
+                    <input type="hidden" asp-for="DepartmentId" />
+                    <input type="hidden" asp-for="PositionId" />
+                    <input type="hidden" asp-for="IsActive" />
+                    <input type="hidden" asp-for="Salary" />
+                    <input type="hidden" asp-for="ProfilePicturePath" />
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <!-- Current Profile Picture (View Only) -->
+                    <div class="text-center mb-4">
+                        <div class="profile-picture-preview">
+                            @if (!string.IsNullOrEmpty(Model.ProfilePicturePath))
+                            {
+                                <img src="@Model.ProfilePicturePath" alt="Profile">
+                            }
+                            else
+                            {
+                                <span class="initials">@Model.FirstName[0]@Model.LastName[0]</span>
+                            }
+                        </div>
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>Profile picture can only be updated by HR
+                        </small>
+                    </div>
+
+                    <!-- Editable Fields -->
+                    <div class="mb-3">
+                        <label asp-for="PhoneNumber" class="form-label fw-semibold"></label>
+                        <input asp-for="PhoneNumber" class="form-control" placeholder="09XX XXX XXXX" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Address" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Address" class="form-control" rows="3" placeholder="Enter your complete address"></textarea>
+                        <span asp-validation-for="Address" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Read-only Info -->
+                    <div class="alert alert-info">
+                        <small>
+                            <i class="fas fa-info-circle me-2"></i>
+                            To update other information (name, department, position), please contact HR.
+                        </small>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Profile" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-submit">
+                            <i class="fas fa-save me-1"></i>Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

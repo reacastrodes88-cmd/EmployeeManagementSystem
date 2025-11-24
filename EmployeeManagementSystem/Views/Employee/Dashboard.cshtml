@@ -1,0 +1,177 @@
+﻿@model IEnumerable<EmployeeManagementSystem.Models.Announcement>
+@{
+    ViewData["Title"] = "My Dashboard";
+    var employee = ViewBag.Employee as EmployeeManagementSystem.Models.Employee;
+}
+
+@section Styles {
+    <style>
+        .welcome-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+        .profile-avatar-lg {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+            margin-right: 20px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .announcement-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border-left: 5px solid #667eea;
+        }
+        .announcement-card.urgent { border-left-color: #dc3545; }
+        .announcement-card.important { border-left-color: #ffc107; }
+        .badge-urgent {
+            background: #dc3545;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        .badge-important {
+            background: #ffc107;
+            color: #333;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        .badge-normal {
+            background: #28a745;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+    </style>
+}
+
+<div class="container py-4">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Welcome Card -->
+    <div class="welcome-card">
+        <div class="d-flex align-items-center">
+            @if (!string.IsNullOrEmpty(employee?.ProfilePicturePath))
+            {
+                <img src="@employee.ProfilePicturePath" alt="Profile" class="profile-avatar-lg" style="object-fit: cover;">
+            }
+            else
+            {
+                <div class="profile-avatar-lg">
+                    @employee?.FirstName[0]@employee?.LastName[0]
+                </div>
+            }
+            <div>
+                <h2 class="fw-bold mb-1">Welcome back, @employee?.FirstName!</h2>
+                <p class="mb-0 opacity-75">@employee?.Position?.PositionTitle • @employee?.Department?.DepartmentName</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <i class="fas fa-calendar-check fa-2x text-primary mb-2"></i>
+                <h4 class="fw-bold">@ViewBag.PendingLeaves</h4>
+                <small class="text-muted">Pending Leaves</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <a asp-action="Profile" class="text-decoration-none">
+                <div class="stat-card">
+                    <i class="fas fa-user fa-2x text-success mb-2"></i>
+                    <h6 class="fw-bold">My Profile</h6>
+                    <small class="text-muted">View & Edit</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a asp-action="FileLeave" class="text-decoration-none">
+                <div class="stat-card">
+                    <i class="fas fa-file-alt fa-2x text-warning mb-2"></i>
+                    <h6 class="fw-bold">File Leave</h6>
+                    <small class="text-muted">Request Time Off</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a asp-action="MyLeaves" class="text-decoration-none">
+                <div class="stat-card">
+                    <i class="fas fa-history fa-2x text-info mb-2"></i>
+                    <h6 class="fw-bold">My Leaves</h6>
+                    <small class="text-muted">View History</small>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Announcements Section -->
+    <h4 class="fw-bold mb-3"><i class="fas fa-bullhorn me-2"></i>Company Announcements</h4>
+
+    @if (Model != null && Model.Any())
+    {
+        @foreach (var announcement in Model)
+        {
+            <div class="announcement-card @(announcement.Priority == EmployeeManagementSystem.Models.AnnouncementPriority.Urgent ? "urgent" : announcement.Priority == EmployeeManagementSystem.Models.AnnouncementPriority.Important ? "important" : "")">
+                <div class="mb-2">
+                    <h5 class="fw-bold mb-2">@announcement.Title</h5>
+                    @switch (announcement.Priority)
+                    {
+                        case EmployeeManagementSystem.Models.AnnouncementPriority.Urgent:
+                            <span class="badge-urgent"><i class="fas fa-exclamation-triangle me-1"></i>Urgent</span>
+                            break;
+                        case EmployeeManagementSystem.Models.AnnouncementPriority.Important:
+                            <span class="badge-important"><i class="fas fa-star me-1"></i>Important</span>
+                            break;
+                        default:
+                            <span class="badge-normal"><i class="fas fa-info-circle me-1"></i>Normal</span>
+                            break;
+                    }
+                </div>
+                <p class="mb-2">@announcement.Content</p>
+                <div class="text-muted small">
+                    <i class="fas fa-user me-1"></i>Posted by: <strong>@announcement.PostedBy</strong>
+                    <span class="mx-2">|</span>
+                    <i class="fas fa-calendar me-1"></i>@announcement.DatePosted.ToString("MMM dd, yyyy")
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <i class="fas fa-bullhorn fa-3x text-muted mb-3"></i>
+            <p class="text-muted">No announcements at the moment.</p>
+        </div>
+    }
+</div>

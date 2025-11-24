@@ -1,0 +1,97 @@
+﻿@model EmployeeManagementSystem.Models.LeaveRequest
+@{
+    ViewData["Title"] = "File Leave Request";
+}
+
+@section Styles {
+    <style>
+        .form-container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            color: white;
+            font-weight: 600;
+        }
+    </style>
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="form-container">
+                <div class="text-center mb-4">
+                    <i class="fas fa-calendar-plus fa-3x text-primary mb-3"></i>
+                    <h3 class="fw-bold">File Leave Request</h3>
+                    <p class="text-muted">Submit your leave application</p>
+                </div>
+
+                <form asp-action="FileLeave" method="post">
+                    <input type="hidden" name="EmployeeId" value="@ViewBag.EmployeeId" />
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="LeaveType" class="form-label fw-semibold"></label>
+                        <select asp-for="LeaveType" class="form-select" asp-items="Html.GetEnumSelectList<EmployeeManagementSystem.Models.LeaveType>()">
+                            <option value="">-- Select Leave Type --</option>
+                        </select>
+                        <span asp-validation-for="LeaveType" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="StartDate" class="form-label fw-semibold"></label>
+                            <input asp-for="StartDate" type="date" class="form-control" />
+                            <span asp-validation-for="StartDate" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="EndDate" class="form-label fw-semibold"></label>
+                            <input asp-for="EndDate" type="date" class="form-control" />
+                            <span asp-validation-for="EndDate" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Reason" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Reason" class="form-control" rows="5" placeholder="Please provide the reason for your leave request..."></textarea>
+                        <span asp-validation-for="Reason" class="text-danger small"></span>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <small>
+                            <i class="fas fa-info-circle me-2"></i>
+                            Your leave request will be sent to HR for approval. You will be notified once it's processed.
+                        </small>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="MyLeaves" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Back to My Leaves
+                        </a>
+                        <button type="submit" class="btn btn-submit">
+                            <i class="fas fa-paper-plane me-1"></i>Submit Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

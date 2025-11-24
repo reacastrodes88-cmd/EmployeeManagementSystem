@@ -1,0 +1,207 @@
+﻿@model EmployeeManagementSystem.Models.Employee
+@{
+    ViewData["Title"] = "Edit Employee";
+}
+
+@section Styles {
+    <style>
+        .form-container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+            .form-header i {
+                font-size: 50px;
+                color: #667eea;
+                margin-bottom: 15px;
+            }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            color: white;
+            font-weight: 600;
+        }
+
+            .btn-submit:hover {
+                opacity: 0.9;
+                color: white;
+            }
+
+        .section-divider {
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            color: #667eea;
+            font-weight: 600;
+        }
+    </style>
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="form-container">
+                <div class="form-header">
+                    <i class="fas fa-user-edit"></i>
+                    <h3 class="fw-bold">Edit Employee</h3>
+                    <p class="text-muted">Update employee information</p>
+                </div>
+
+                <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="EmployeeId" />
+                    <input type="hidden" asp-for="UserId" />
+                    <input type="hidden" asp-for="IsActive" />
+                    <input type="hidden" asp-for="ProfilePicturePath" />
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <!-- Current Profile Picture & Upload -->
+                    <div class="text-center mb-4 pb-3 border-bottom">
+                        @if (!string.IsNullOrEmpty(Model.ProfilePicturePath))
+                        {
+                            <img src="@Model.ProfilePicturePath" alt="Current Photo" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 15px;">
+                        }
+                        else
+                        {
+                            <div style="width: 120px; height: 120px; border-radius: 50%; background: #667eea; color: white; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 700; margin: 0 auto 15px;">
+                                @Model.FirstName[0]@Model.LastName[0]
+                            </div>
+                        }
+                        <h6 class="text-muted mb-3"><i class="fas fa-camera me-2"></i>Change Employee Photo</h6>
+                        <input type="file" name="profilePicture" accept="image/*" class="form-control" style="max-width: 400px; margin: 0 auto;" />
+                        <small class="text-muted d-block mt-2">Leave empty to keep current photo</small>
+                    </div>
+
+                    <!-- Personal Information -->
+                    <h6 class="section-divider"><i class="fas fa-user me-2"></i>Personal Information</h6>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="EmployeeNumber" class="form-label fw-semibold"></label>
+                            <input asp-for="EmployeeNumber" class="form-control" readonly style="background: #f0f0f0;" />
+                            <small class="text-muted">Auto-generated, cannot be changed</small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="FirstName" class="form-label fw-semibold"></label>
+                            <input asp-for="FirstName" class="form-control" />
+                            <span asp-validation-for="FirstName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="LastName" class="form-label fw-semibold"></label>
+                            <input asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Gender" class="form-label fw-semibold"></label>
+                            <select asp-for="Gender" class="form-select">
+                                <option value="">-- Select Gender --</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <span asp-validation-for="Gender" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6"></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DateOfBirth" class="form-label fw-semibold"></label>
+                            <input asp-for="DateOfBirth" type="date" class="form-control" />
+                            <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DateHired" class="form-label fw-semibold"></label>
+                            <input asp-for="DateHired" type="date" class="form-control" />
+                            <span asp-validation-for="DateHired" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <h6 class="section-divider"><i class="fas fa-address-book me-2"></i>Contact Information</h6>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Email" class="form-label fw-semibold"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PhoneNumber" class="form-label fw-semibold"></label>
+                            <input asp-for="PhoneNumber" class="form-control" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Address" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Address" class="form-control" rows="2"></textarea>
+                        <span asp-validation-for="Address" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Employment Information -->
+                    <h6 class="section-divider"><i class="fas fa-briefcase me-2"></i>Employment Information</h6>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DepartmentId" class="form-label fw-semibold"></label>
+                            <select asp-for="DepartmentId" asp-items="@ViewBag.Departments" class="form-select">
+                                <option value="">-- Select Department --</option>
+                            </select>
+                            <span asp-validation-for="DepartmentId" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PositionId" class="form-label fw-semibold"></label>
+                            <select asp-for="PositionId" asp-items="@ViewBag.Positions" class="form-select">
+                                <option value="">-- Select Position --</option>
+                            </select>
+                            <span asp-validation-for="PositionId" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Salary" class="form-label fw-semibold"></label>
+                            <input asp-for="Salary" type="number" step="0.01" class="form-control" placeholder="Enter salary" />
+                            <span asp-validation-for="Salary" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Back to List
+                        </a>
+                        <button type="submit" class="btn btn-submit">
+                            <i class="fas fa-save me-1"></i>Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

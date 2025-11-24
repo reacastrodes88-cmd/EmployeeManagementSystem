@@ -1,0 +1,253 @@
+﻿@model IEnumerable<EmployeeManagementSystem.Models.Employee>
+@{
+    ViewData["Title"] = "HR Dashboard";
+}
+
+@section Styles {
+    <style>
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+            height: 100%;
+        }
+
+            .dashboard-card:hover {
+                transform: translateY(-5px);
+            }
+
+        .stat-card {
+            text-align: center;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+        }
+
+            .stat-icon i {
+                font-size: 25px;
+                color: white;
+            }
+
+            .stat-icon.blue {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            .stat-icon.green {
+                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            }
+
+            .stat-icon.orange {
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            }
+
+            .stat-icon.purple {
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .section-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .btn-action {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .btn-primary-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+        }
+
+        .quick-actions a {
+            display: block;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: #333;
+            background: #f8f9fa;
+            transition: all 0.3s;
+        }
+
+            .quick-actions a:hover {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+
+            .quick-actions a i {
+                margin-right: 10px;
+            }
+    </style>
+}
+
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">HR Dashboard</h2>
+            <p class="text-muted mb-0">Welcome back! Here's your overview.</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary-gradient btn-action">
+            <i class="fas fa-plus me-2"></i>Add Employee
+        </a>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="dashboard-card stat-card">
+                <div class="stat-icon blue">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-number">@ViewBag.TotalEmployees</div>
+                <div class="stat-label">Total Employees</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="dashboard-card stat-card">
+                <div class="stat-icon orange">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-number">@ViewBag.PendingLeaves</div>
+                <div class="stat-label">Pending Leaves</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="dashboard-card stat-card">
+                <div class="stat-icon green">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="stat-number">@ViewBag.Departments</div>
+                <div class="stat-label">Departments</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="dashboard-card stat-card">
+                <div class="stat-icon purple">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="stat-number">@ViewBag.Positions</div>
+                <div class="stat-label">Positions</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Recent Employees -->
+        <div class="col-lg-8">
+            <div class="table-container">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="section-title mb-0">Recent Employees</h5>
+                    <a asp-action="Index" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Department</th>
+                                <th>Position</th>
+                                <th>Date Hired</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                @foreach (var emp in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                @if (!string.IsNullOrEmpty(emp.ProfilePicturePath))
+                                                {
+                                                    <img src="@emp.ProfilePicturePath" alt="@emp.FullName" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 10px;">
+                                                }
+                                                else
+                                                {
+                                                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; margin-right: 10px;">
+                                                        @emp.FirstName[0]@emp.LastName[0]
+                                                    </div>
+                                                }
+                                                <div>
+                                                    <strong>@emp.FullName</strong><br>
+                                                    <small class="text-muted">@emp.Email</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>@emp.Department?.DepartmentName</td>
+                                        <td>@emp.Position?.PositionTitle</td>
+                                        <td>@emp.DateHired.ToString("MMM dd, yyyy")</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-4">
+                                        <i class="fas fa-users fa-2x mb-2"></i><br>
+                                        No employees yet. <a asp-action="Create">Add your first employee!</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="col-lg-4">
+            <div class="dashboard-card">
+                <h5 class="section-title">Quick Actions</h5>
+                <div class="quick-actions">
+                    <a asp-action="Create">
+                        <i class="fas fa-user-plus"></i>Add New Employee
+                    </a>
+                    <a asp-action="Index">
+                        <i class="fas fa-list"></i>View All Employees
+                    </a>
+                    <a asp-action="LeaveRequests">
+                        <i class="fas fa-calendar-check"></i>Manage Leave Requests
+                    </a>
+                    <a asp-action="Announcements">
+                        <i class="fas fa-bullhorn"></i>Manage Announcements
+                    </a>
+                    <a asp-controller="Account" asp-action="Register">
+                        <i class="fas fa-user-shield"></i>Register Employee Account
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

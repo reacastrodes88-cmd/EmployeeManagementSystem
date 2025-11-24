@@ -1,0 +1,179 @@
+﻿@model IEnumerable<EmployeeManagementSystem.Models.LeaveRequest>
+@{
+    ViewData["Title"] = "Leave Requests";
+}
+
+@section Styles {
+    <style>
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .badge-pending {
+            background: #ffc107;
+            color: #333;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .badge-approved {
+            background: #28a745;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .badge-rejected {
+            background: #dc3545;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .badge-cancelled {
+            background: #6c757d;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .btn-approve {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+        }
+
+        .btn-reject {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+        }
+    </style>
+}
+
+<div class="container py-4">
+    <!-- Success Message -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h2 class="fw-bold mb-1"><i class="fas fa-calendar-alt me-2"></i>Leave Requests</h2>
+        <p class="mb-0 opacity-75">Manage employee leave applications</p>
+    </div>
+
+    <!-- Leave Requests Table -->
+    <div class="table-container">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Leave Type</th>
+                        <th>Duration</th>
+                        <th>Reason</th>
+                        <th>Date Filed</th>
+                        <th>Status</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var leave in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@leave.Employee?.FullName</strong><br>
+                                    <small class="text-muted">@leave.Employee?.EmployeeNumber</small>
+                                </td>
+                                <td>@leave.LeaveType</td>
+                                <td>
+                                    @leave.StartDate.ToString("MMM dd") - @leave.EndDate.ToString("MMM dd, yyyy")<br>
+                                    <small class="text-muted">(@leave.TotalDays day(s))</small>
+                                </td>
+                                <td style="max-width: 200px;">
+                                    <small>@leave.Reason</small>
+                                </td>
+                                <td>@leave.DateFiled.ToString("MMM dd, yyyy")</td>
+                                <td>
+                                    @switch (leave.Status)
+                                    {
+                                        case EmployeeManagementSystem.Models.LeaveStatus.Pending:
+                                            <span class="badge-pending">Pending</span>
+                                            break;
+                                        case EmployeeManagementSystem.Models.LeaveStatus.Approved:
+                                            <span class="badge-approved">Approved</span>
+                                            break;
+                                        case EmployeeManagementSystem.Models.LeaveStatus.Rejected:
+                                            <span class="badge-rejected">Rejected</span>
+                                            break;
+                                        case EmployeeManagementSystem.Models.LeaveStatus.Cancelled:
+                                            <span class="badge-cancelled">Cancelled</span>
+                                            break;
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (leave.Status == EmployeeManagementSystem.Models.LeaveStatus.Pending)
+                                    {
+                                        <form asp-action="ApproveLeave" asp-route-id="@leave.LeaveRequestId" method="post" class="d-inline">
+                                            <button type="submit" class="btn-approve" onclick="return confirm('Approve this leave request?')">
+                                                <i class="fas fa-check"></i> Approve
+                                            </button>
+                                        </form>
+                                        <form asp-action="RejectLeave" asp-route-id="@leave.LeaveRequestId" method="post" class="d-inline">
+                                            <button type="submit" class="btn-reject" onclick="return confirm('Reject this leave request?')">
+                                                <i class="fas fa-times"></i> Reject
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <small class="text-muted">
+                                            Processed: @leave.DateProcessed?.ToString("MMM dd, yyyy")
+                                        </small>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <i class="fas fa-calendar-check fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">No leave requests found.</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
