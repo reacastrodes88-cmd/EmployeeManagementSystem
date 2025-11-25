@@ -48,11 +48,35 @@ builder.Services.AddScoped<IJobApplicationService, JobApplicationService>();
 
 var app = builder.Build();
 
-// Seed Roles and Admin User
+// Add global error handling middleware - BAGO ang lahat
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next();
+    }
+    catch (Exception ex)
+    {
+        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An unhandled exception occurred");
+        throw; // Re-throw para makita ang error
+    }
+});
+
+// Seed Roles and Admin User - with error handling
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    await SeedData.InitializeAsync(services);
+    try
+    {
+        await SeedData.InitializeAsync(services);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred seeding the database.");
+        // Don't throw - let the app continue even if seeding fails
+    }
 }
 
 // Configure the HTTP request pipeline
@@ -61,10 +85,17 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+else
+{
+    // ENABLE detailed errors para makita mo ang exact problem
+    app.UseDeveloperExceptionPage();
+}
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
 

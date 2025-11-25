@@ -37,29 +37,45 @@ namespace EmployeeManagementSystem.Controllers
 
             if (ModelState.IsValid)
             {
-                // Handle resume file upload
-                if (resume != null && resume.Length > 0)
+                try
                 {
-                    var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "resumes");
-                    Directory.CreateDirectory(uploadsFolder);
-
-                    var uniqueFileName = $"{application.FirstName}_{application.LastName}_{Guid.NewGuid()}{Path.GetExtension(resume.FileName)}";
-                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    // Handle resume file upload
+                    if (resume != null && resume.Length > 0)
                     {
-                        await resume.CopyToAsync(fileStream);
+                        // Use absolute path
+                        var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "resumes");
+
+                        // Create directory if it doesn't exist
+                        if (!Directory.Exists(uploadsFolder))
+                        {
+                            Directory.CreateDirectory(uploadsFolder);
+                        }
+
+                        var uniqueFileName = $"{application.FirstName}_{application.LastName}_{Guid.NewGuid()}{Path.GetExtension(resume.FileName)}";
+                        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await resume.CopyToAsync(fileStream);
+                        }
+
+                        application.ResumeFilePath = $"/uploads/resumes/{uniqueFileName}";
                     }
 
-                    application.ResumeFilePath = $"/uploads/resumes/{uniqueFileName}";
+                    application.Status = ApplicationStatus.Pending;
+                    application.DateApplied = DateTime.Now;
+
+                    await _jobApplicationService.CreateJobApplicationAsync(application);
+
+                    TempData["Success"] = "Your application has been submitted successfully! We will contact you soon.";
+                    return RedirectToAction("ThankYou");
                 }
-
-                application.Status = ApplicationStatus.Pending;
-                application.DateApplied = DateTime.Now;
-
-                await _jobApplicationService.CreateJobApplicationAsync(application);
-                TempData["Success"] = "Your application has been submitted successfully! We will contact you soon.";
-                return RedirectToAction("ThankYou");
+                catch (Exception ex)
+                {
+                    // Log the error
+                    ModelState.AddModelError("", $"An error occurred while submitting your application: {ex.Message}");
+                    return View(application);
+                }
             }
 
             return View(application);
